@@ -4,15 +4,19 @@
 (define (longest-palindrome s)
   (if (eqv? (string-length s) 0)
       s
-      (let ([longest-that-ends-at : (Vectorof Integer) (make-vector (string-length s) 1)])
+      (let ([longest-that-ends-at : (Vectorof Integer) (make-vector (string-length s) 1)]
+            [count : Integer 1])
         (for ([idx : Natural (in-range 1 (string-length s))])
           (let ([ch (string-ref s idx)]
                 [len (vector-ref longest-that-ends-at (sub1 idx))])
             (let ([idx0 (- idx len 1)])
-              (when (eqv? ch (string-ref s (sub1 idx)))
-                (vector-set! longest-that-ends-at idx 2))
+              (set! count (if (eqv? ch (string-ref s (sub1 idx)))
+                              (add1 count)
+                              1))
+              (vector-set! longest-that-ends-at idx count)
               (when (and (natural? idx0) (eqv? ch (string-ref s idx0)))
                 (vector-set! longest-that-ends-at idx (+ len 2))))))
+        (print longest-that-ends-at)
         (let-values
             ([(len idx)
               (for/fold
