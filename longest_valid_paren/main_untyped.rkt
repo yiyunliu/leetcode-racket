@@ -1,22 +1,17 @@
-#lang typed/racket
+#lang racket
 
-(: longest-valid-parentheses (-> String Integer))
 (define (longest-valid-parentheses s)
   (calculate-longest-rec 0 0 0 (longest-valid-rec s)))
 
-(define-type Stack (Listof Natural))
-
-(: left-paren? (-> Char Boolean))
 (define (left-paren? ch)
   (eqv? #\( ch))
 
-(: longest-valid-rec (-> String (Vectorof (U False Integer))))
 (define (longest-valid-rec str)
-  (let ([max-idxs : (Vectorof (U False Integer)) (make-vector (string-length str) #f)])
+  (let ([max-idxs (make-vector (string-length str) #f)])
     (for/fold
-          ([stack : Stack '()])
-          ([idx : Natural (in-naturals)]
-           [ch : Char str])
+          ([stack '()])
+          ([idx (in-naturals)]
+           [ch str])
       (cond
         [(left-paren? ch)
          (cons idx stack)]
@@ -26,7 +21,6 @@
          (cdr stack)]))
     max-idxs))
 
-(: calculate-longest-rec (-> Integer Integer Integer (Vectorof (U False Integer)) Integer))
 (define (calculate-longest-rec gmax curr-acc n idxs)
   (if (< n (vector-length idxs))
       (let ([maybe-next (vector-ref idxs n)])
