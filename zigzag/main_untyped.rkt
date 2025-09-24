@@ -1,21 +1,19 @@
-#lang typed/racket
+#lang racket
 
-(: print-special-row (-> String Integer Integer Output-Port Void))
 (define (print-special-row s offset num-rows out)
   (let ([gap (* 2 (- num-rows 1))])
-    (for ([i : Integer (in-range offset (string-length s) gap)])
+    (for ([i (in-range offset (string-length s) gap)])
       (display (string-ref s i) out))))
 
-(: convert (-> String Natural String))
 (define (convert s num-rows)
   (if (eq? num-rows 1)
       s
       (let ([out (open-output-string)]
             [gap (* 2 (- num-rows 1))])
         (print-special-row s 0 num-rows out)
-        (for ([row : Natural (in-range 1 (sub1 num-rows))])
-          (let* ([comp : Integer (- gap row)])
-            (for ([i : Integer (in-range row (string-length s) gap)])
+        (for ([row (in-range 1 (sub1 num-rows))])
+          (let* ([comp (- gap row)])
+            (for ([i (in-range row (string-length s) gap)])
               (display (string-ref s i) out)
               (let ([comp-idx (+ (- i row) comp)])
                 (when (< comp-idx (string-length s))
