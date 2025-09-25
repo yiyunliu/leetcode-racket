@@ -1,44 +1,87 @@
-#lang typed/racket
+#lang racket
 
-(define-type Trie
-  (U TrieNode False))
+(module M typed/racket
+  (provide empty-trie insert-trie-node! update-query-state)
 
-(define-type TrieNode
-  (Vectorof Trie))
+  (define-type Trie
+    (U TrieNode False))
 
-(: alphabet-size Integer)
-(define alphabet-size 24)
+  (define-type QueryState (Listof TrieNode))
 
-(: empty-trie-node (-> TrieNode))
-(define (empty-trie-node)
-  (make-vector alphabet-size #f))
+  (define-struct TrieNode
+    ([is-word : Boolean]  [children :  (Vectorof Trie)] ) #:mutable)
 
-(: singleton-node (-> Integer TrieNode))
-(define (singleton-node i)
-  (let ([vec (empty-trie-node)])
-    (vector-set! vec i (empty-trie-node))
-    vec))
+  (: insert-trie-node-rec! (-> String Integer TrieNode Void))
+  (define (insert-trie-node-rec! str idx trie)
+    (if (< idx (string-length str))
+        (let* ([ch (char->index (string-ref str idx))]
+               [maybe-trie (vector-ref (TrieNode-children trie) ch)])
+          (if maybe-trie
+              (insert-trie-node-rec! str (add1 idx) maybe-trie)
+              (let ([subtrie (empty-trie)])
+                (vector-set! (TrieNode-children trie) ch subtrie)
+                (insert-trie-node-rec! str (add1 idx) subtrie))))
+        (set-TrieNode-is-word! trie #t)))
 
-(: char->index (-> Char Integer))
-(define (char->index ch)
-  (- (char->integer ch) 97))
-
-(: insert-trie-node! (-> String Integer TrieNode Void))
-(define (insert-trie-node! str idx trie)
-  (when (< idx (string-length str))
-      (let* ([ch (char->index (string-ref str idx))]
-             [maybe-trie (vector-ref trie ch)])
-        (if maybe-trie
-            (insert-trie-node! str (add1 idx) maybe-trie)
-            (let ([subtrie (singleton-node ch)])
-              (vector-set! trie ch subtrie)
-              (insert-trie-node! str (add1 idx) subtrie))))))
+  (: insert-trie-node! (-> TrieNode String Void))
+  (define (insert-trie-node! trie str)
+    (insert-trie-node-rec! str 0 trie))
 
 
-(: trie-prefix-rec? (-> TrieNode (Listof Char) Boolean))
-(define (trie-prefix-rec? trie str)
-  (or (null? str)
-      (let ([ch (char->index (car str))]
-            [str (cdr str)])
-        (let ([maybe-trie (vector-ref trie ch)])
-          (and maybe-trie (trie-prefix-rec? maybe-trie str))))))
+  (: update-query-state (-> QueryState Char (Values QueryState Boolean)))
+  (define (update-query-state tries ch)
+    (let ([ch (char->index ch)])
+      (for/fold
+          ([acc-tries : QueryState '()]
+           [acc-bool : Boolean #f])
+          ([trie tries])
+        (let ([result (trie-query-char trie ch)])
+          (if result
+              (values (cons (car result) acc-tries) (or acc-bool (cdr result)))
+              (values acc-tries (or result acc-bool)))))))
+
+  (: alphabet-size Integer)
+  (define alphabet-size 26)
+
+  (: empty-trie-vector (-> (Vectorof Trie)))
+  (define (empty-trie-vector)
+    (make-vector alphabet-size #f))
+
+  (: empty-trie (-> TrieNode))
+  (define (empty-trie)
+    (TrieNode #f (empty-trie-vector)))
+
+  (: char->index (-> Char Integer))
+  (define (char->index ch)
+    (- (char->integer ch) 97))
+
+  (: trie-query-char (-> TrieNode Integer (U False (Pairof TrieNode Boolean))))
+  (define (trie-query-char trie ch)
+    (let ([maybe-child (vector-ref (TrieNode-children trie) ch)])
+      (if maybe-child
+          (cons maybe-child (TrieNode-is-word maybe-child))
+          #f))))
+
+(require 'M)
+
+(define stream-checker%
+  (class object%
+    (super-new)
+    
+    ; words : (listof string?)
+    (init-field
+      words)
+
+    (define trie
+      (let ([ret (empty-trie)])
+        (for ([word words])
+          (insert-trie-node! ret word))
+        ret))
+
+    (define query-state (list trie))
+
+    ; query : char? -> boolean?
+    (define/public (query letter)
+      (let-values ([(new-state ret) (update-query-state query-state letter)])
+        (set! query-state (cons trie new-state))
+        ret))))
