@@ -32,9 +32,23 @@
   (define (slice-empty? s)
     (>= (Slice-start s) (Slice-end s)))
 
-  
+  (: minimum-total-rec (-> (Vectorof (Vectorof Integer)) Integer Integer Integer))
+  (define (minimum-total-rec vec row col)
+    (let ([size (vector-length vec)])
+      (if (>= row size)
+          0
+          (let ([curr (vector-ref (vector-ref vec row) col)])
+            (+ curr (min (minimum-total-rec vec (add1 row) col) (minimum-total-rec vec (add1 row) (add1 col))))))))
 
-  )
+  (: minimum-total (-> (Listof (Listof Integer)) Integer))
+  (define (minimum-total triangle)
+    (let ([triangle (list->vector (map (ann list->vector (-> (Listof Integer) (Vectorof Integer))) triangle))])
+      (minimum-total-rec triangle 0 0))))
 
 (require 'M)
 (provide minimum-total)
+
+(module+ test
+  (require rackunit)
+  (check-eqv? (minimum-total '((2) (3 4) (6 5 7) (4 1 8 3))) 11)
+  (check-eqv? (minimum-total '((-10))) -10))
