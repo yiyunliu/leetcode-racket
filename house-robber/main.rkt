@@ -31,7 +31,10 @@
 
         (define new-start (+ start 2))
         (define start-elem (vector-ref nums start))
-        (define max-with-start (if (> new-start end) start-elem (+ start-elem (matrix-ref cache new-start end))))
+        (define max-with-start
+          (if (> new-start end)
+              start-elem
+              (+ start-elem (matrix-ref cache new-start end))))
 
         (matrix-set! cache start end (max max-with-start max-without-start))))
 
