@@ -1,5 +1,7 @@
 #lang racket
 
+;; Could have been done in O(n) space
+
 (module M typed/racket
   (provide rob)
   (define-type (Matrix A) (Vectorof (Vectorof A)))
