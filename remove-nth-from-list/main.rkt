@@ -6,7 +6,7 @@
   (-> (or/c list-node? #f) exact-integer? (or/c list-node? #f))
   (define fast-pointer
     (for/fold ([acc head])
-              ([_ (in-range n)])
+              ([_ (in-cycle #f)])
       (list-node-next acc)))
   (cond
     [(false? fast-pointer)
