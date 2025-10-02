@@ -10,7 +10,8 @@ structure WordBreak :> WORDBREAK = struct
 		    case Trie.queryChar (trie, ch)
 		     of NONE => acc
 		      | SOME (is_word, trie) =>
-			(trie :: acc_ls, is_word orelse acc_bool)) ([],false) acc
+			(trie :: acc_ls, is_word orelse acc_bool))
+		([],false) acc
 	in (if is_word then (itrie :: tries) else tries, is_word)
 	end
 
@@ -51,7 +52,8 @@ structure Trie :> TRIE = struct
 	      case Array.sub (children, ch)
 	       of NONE =>
 		  let val new_node = makeTrie () in
-		      (Array.update (children,ch,SOME new_node); new_node)
+		      (Array.update (children,ch,SOME new_node);
+		       new_node)
 		  end
 	       | SOME node => node in
 	      insert_slice (new_node, str)
