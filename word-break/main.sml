@@ -1,3 +1,30 @@
+signature WORDBREAK = sig
+  val wordbreak : string list -> string -> bool
+end
+
+structure WordBreak :> WORDBREAK = struct
+  fun process_char itrie (ch, (acc,_))
+      = let val (tries, is_word) =
+	    List.foldl
+		(fn (trie,acc as (acc_ls,acc_bool)) =>
+		    case Trie.queryChar (trie, ch)
+		     of NONE => acc
+		      | SOME (is_word, trie) =>
+			(trie :: acc_ls, is_word orelse acc_bool)) ([],false) acc
+	in (if is_word then (itrie :: tries) else tries, is_word)
+	end
+
+  fun wordbreak words =
+      let val trie = Trie.makeTrie () in
+	  List.app (fn word => Trie.insert (trie,word)) words;
+	  fn str =>
+	     #2 (CharVector.foldl
+		     (process_char trie)
+		     ([trie],false) str)
+      end
+end
+
+
 signature TRIE = sig
   type t
   val makeTrie : unit -> t
