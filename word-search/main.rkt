@@ -1,16 +1,10 @@
 #lang racket
 
 (module M typed/racket
+  (provide exist)
   (define-type Coord (Pair Integer Integer))
 
   (define-struct State ([discovered : (Setof Coord)] [word : (Listof Char)] (coord : Coord)) #:transparent)
-
-  (require/typed data/queue
-    [#:opaque StateQueue queue?]
-    [make-queue (-> StateQueue)]
-    [enqueue! (-> StateQueue State Void)]
-    [dequeue! (-> StateQueue State)]
-    [queue-empty? (-> StateQueue Boolean)])
 
   (: matrix-ref (-> (Vectorof (Vectorof Char)) Coord Char))
   (define (matrix-ref matrix coord)
@@ -18,7 +12,6 @@
     (vector-ref (vector-ref matrix x) y))
 
   (define-type (Matrix A) (Vectorof (Vectorof A)))
-
 
   (: coord-valid? (-> (Matrix Char) Coord Boolean))
   (define (coord-valid? m coord)
@@ -58,34 +51,39 @@
   (: exist (-> (Listof (Listof Char)) String Boolean))
   (define (exist _board _word)
     (: word (Listof Char))
-    (define word (string->list _word))
+    ;; This is stupid
+    (define word (reverse (string->list _word)))
     (: board (Vectorof (Vectorof Char)))
     (define board
       (list->vector (map (lambda ([x : (Listof Char)]) (list->vector x)) _board)))
     (define height (vector-length board))
     (define width (vector-length (vector-ref board 0)))
-    (: queue StateQueue)
-    (define queue (make-queue))
 
-    (for* ([i (in-range height)]
-           [j (in-range width)])
-      (enqueue! queue (coord->state (cons i j) word)))
+    (: stack (Listof State))
+    (define stack
+      (ann (for*/list : (Listof State)
+               ([i : Integer (in-range height)]
+                [j : Integer (in-range width)])
+        (ann (coord->state (ann (cons i j) Coord) word) State)) (Listof State)))
 
-    (: loop (-> Boolean))
-    (define (loop)
+    (: loop (-> (Listof State) Boolean))
+    (define (loop stack)
       (cond
-        [(queue-empty? queue)
+        [(null? stack)
          #f]
         [else
-         (define st (dequeue! queue))
+         (define st (first stack))
+         (define new-stack (rest stack))
          (define maybe-sts
            (next-state board st))
          (cond
            [(list? maybe-sts)
-            (for ([st : State maybe-sts])
-              (enqueue! queue st))
-            (loop)]
+            (loop (for/fold
+                      ([new-stack : (Listof State) new-stack])
+                      ([st : State maybe-sts])
+                    (cons st new-stack)))
+            ]
            [(symbol? maybe-sts) #t])]))
-    (loop)))
+    (loop stack)))
 
 (require 'M)
