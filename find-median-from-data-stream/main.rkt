@@ -4,6 +4,20 @@
 
 (struct two-heaps (max-heap min-heap)  #:transparent)
 
+(define median-finder%
+  (class object%
+    (super-new)
+
+    (init-field)
+    (define th (make-two-heaps))
+
+    ; add-num : exact-integer? -> void?
+    (define/public (add-num num)
+      (two-heaps-add! th num))
+    ; find-median : -> flonum?
+    (define/public (find-median)
+      (two-heaps-median th))))
+
 (define (make-two-heaps)
   (two-heaps (make-heap >) (make-heap <)))
 
