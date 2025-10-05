@@ -1,5 +1,3 @@
-use std::collections::HashMap as Map;
-
 pub struct Solution;
 
 impl Solution {
@@ -14,19 +12,22 @@ impl Solution {
 
 	while end < s.len() {
 	    let size = end - start;
-	    let next_elem = s[end] - a_u8;
-	    counts[next_elem as usize] += 1;
+	    let next_elem = (s[end] - a_u8) as usize;
+	    counts[next_elem] += 1;
+	    // there is a more efficient way to do it without recalculating the highest
+	    // frequency element, but i haven't figured out the right proof yet
 	    let highest_freq = *counts.iter().max().unwrap();
 
 	    if highest_freq + k >= size + 1 {
 		end += 1;
+		max = std::cmp::max(max, end - start);
 	    }
 	    else {
+		let start_elem = (s[start] - a_u8) as usize;
+		counts[start_elem] -= 1;
 		start += 1;
-		counts[(s[start] - a_u8) as usize] -= 1;
-		counts[next_elem as usize] -= 1;
+		counts[next_elem] -= 1;
 	    }
-	    max = std::cmp::max(max, end - start);
 	}
 	max as i32
     }
