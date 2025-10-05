@@ -8,28 +8,24 @@ impl Solution {
 	let s = s.into_bytes();
 	let mut start : usize = 0;
 	let mut end : usize = 0;
-	let mut max : usize = 0;
+	let mut highest_freq = 0;
 
 	while end < s.len() {
 	    let size = end - start;
 	    let next_elem = (s[end] - a_u8) as usize;
 	    counts[next_elem] += 1;
-	    // there is a more efficient way to do it without recalculating the highest
-	    // frequency element, but i haven't figured out the right proof yet
-	    let highest_freq = *counts.iter().max().unwrap();
+	    highest_freq = std::cmp::max(highest_freq,counts[next_elem]);
 
-	    if highest_freq + k >= size + 1 {
-		end += 1;
-		max = std::cmp::max(max, end - start);
-	    }
-	    else {
+	    // this branch is only possible if next_elem doesn't have the highest
+	    // frequency
+	    if highest_freq + k < size + 1  {
 		let start_elem = (s[start] - a_u8) as usize;
 		counts[start_elem] -= 1;
 		start += 1;
-		counts[next_elem] -= 1;
 	    }
+	    end += 1;
 	}
-	max as i32
+	std::cmp::min(highest_freq + k, s.len()) as i32
     }
 }
 
