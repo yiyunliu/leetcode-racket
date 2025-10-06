@@ -100,8 +100,7 @@
    (for*/fold : (Listof String)
               ([acc : (Listof String) '()])
               ([row (in-range num-rows)]
-               [col (in-range num-cols)]
-               #:unless (discovered? row col))
+               [col (in-range num-cols)])
      (let loop : (Listof String)
           ([acc : (Listof String) acc]
            [str : (Listof Char) '()]
