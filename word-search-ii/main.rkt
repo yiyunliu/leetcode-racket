@@ -110,19 +110,18 @@
            [col : Integer col])
        (discovered! row col)
 
-       (define new-acc
-         (if (TrieNode-is-word? trie)
-             (set-add acc (list->string (reverse str)))
-             acc))
-
        (define ch (matrix-ref board row col))
        (define new-trie-maybe (trie-query-char trie ch))
        (cond
          [(false? new-trie-maybe)
           (undo-discovered! row col)
-          new-acc]
+          acc]
          [else
           (define new-str (cons ch str))
+          (define new-acc
+            (if (TrieNode-is-word? new-trie-maybe)
+                (set-add acc (list->string (reverse new-str)))
+                acc))
           (define result
             (for/fold
              ([acc : (Setof String) new-acc])
@@ -150,6 +149,7 @@
   (check-equal? (list->set (find-words board '("oeiiflvrk" "ana"))) (set "oeiiflvrk"))
   (check-equal? (list->set (find-words board '("oateihkaa" "ana"))) (set "oateihkaa"))
   (check-equal? (list->set (find-words board '())) (set))
+  (check-equal? (list->set (find-words '((#\a)) '("a"))) (set "a"))
 
   (define board-small
     '((#\a #\b) (#\c #\d)))
