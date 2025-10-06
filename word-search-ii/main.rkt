@@ -25,7 +25,7 @@
 
 
 (define-type Trie (U TrieNode #f))
-(define-struct TrieNode ([is-word? : Boolean] [children : (Vectorof Trie)]) #:mutable)
+(define-struct TrieNode ([is-word? : Boolean] [children : (Vectorof Trie)]) #:mutable #:transparent)
 
 (: make-trie (-> TrieNode))
 (define (make-trie)
@@ -38,16 +38,17 @@
 
 (: trie-insert! (-> TrieNode String Void))
 (define (trie-insert! trie str)
-  (for/fold
+  (define result
+    (for/fold
       ([trie : TrieNode trie])
       ([_ch : Char str])
-    (define ch (char->index _ch))
-    (define children (TrieNode-children trie))
-    (or (vector-ref children ch)
-        (let ([new-trie (make-trie)])
-          (vector-set! children ch new-trie)
-          new-trie)))
-  (void))
+      (define ch (char->index _ch))
+      (define children (TrieNode-children trie))
+      (or (vector-ref children ch)
+          (let ([new-trie (make-trie)])
+            (vector-set! children ch new-trie)
+            new-trie))))
+  (set-TrieNode-is-word?! result #t))
 
 (: trie-query-char (-> TrieNode Char Trie))
 (define (trie-query-char trie ch)
@@ -85,7 +86,7 @@
     (filter
      (lambda ([coord : (Pair Integer Integer)])
        (match-define (cons row col) coord)
-       (and (not (discovered? row col)) (coord-valid? row col)))
+       (and (coord-valid? row col) (not (discovered? row col))))
      (list (cons (add1 row) col) (cons (sub1 row) col) (cons row (add1 col)) (cons row (sub1 col)))))
 
   (: trie TrieNode)
@@ -109,9 +110,8 @@
            [col : Integer col])
        (discovered! row col)
 
-       (match-define (TrieNode is-word? children) trie)
        (define new-acc
-         (if is-word?
+         (if (TrieNode-is-word? trie)
              (set-add acc (list->string (reverse str)))
              acc))
 
@@ -130,3 +130,17 @@
               (loop acc new-str new-trie-maybe (car coord) (cdr coord))))
           (undo-discovered! row col)
           result])))))
+
+(module+ test
+  (require typed/rackunit)
+  (: board (Pair (Listof Char) (Listof (Listof Char))))
+  (define board
+    '((#\o #\a #\a #\n)
+      (#\e #\t #\a #\e)
+      (#\i #\h #\k #\r)
+      (#\i #\f #\l #\v)))
+  (: words (Listof String))
+  (define words
+    '("eat" "pea" "oath" "rain"))
+
+  (check-equal? (list->set (find-words board words)) (set "eat" "oath")))
