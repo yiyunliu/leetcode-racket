@@ -1,6 +1,6 @@
-* some leetcode solutions in (mostly) typed racket
+* Some Leetcode solutions in (mostly) Typed Racket
 
-** why racket?
+** Why Racket?
 Racket is quite good for leetcode problems. It is functional but
 you can still quite comfortably write imperative programs
 (e.g. imperative data structures such as o(1) access arrays). The
@@ -31,7 +31,7 @@ untyped racket in many scenarios, with the only exception being
 problems that are so simple that the overhead of type checking
 outweighs the cost of the algorithm itself.
 
-** how do you even write typed racket on leetcode? it's not even supported!
+** How do you even write typed racket on leetcode? It's not supported!
 You can use the following hack to write any officially supported Racket
 dialects on Leetcode, including R6RS and lazy racket.
 
@@ -82,7 +82,7 @@ Of course, you can use the same trick to write lazy racket.
 #+end_src
 
 
-** did you get a job from writing racket during interviews?
+** Did you get a job from writing racket during interviews?
 Not yet, although I haven't actually gotten an interview yet. Despite
 all the nice things I said about Racket, I do think writing racket in
 a live coding interview is not the best idea, both in terms of
@@ -101,8 +101,10 @@ supported on Leetcode, unlike Racket. (The other functional language
 supported by Leetcode is scala :()
 
 
-I'm in the process of redoing some of the exercises in Haskell and I
-might fully commit to it once I figure out an ergonomic way of working
+I'm in the process of redoing some of the exercises in Haskell and
+SML. At least the repo makes it easy for me to write PBT to check my
+Haskell implementation when Leetcode doesn't support it.
+I might fully commit to Haskell once I figure out an ergonomic way of working
 with mutable structures with linear types. The issue with Racket is
 purely cosmetic, but not negligible if your chance of employment is at
 stake.
