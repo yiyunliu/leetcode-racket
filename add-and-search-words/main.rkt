@@ -42,10 +42,10 @@
        (define ch (string-ref str idx))
        (cond
          [(eqv? #\. ch)
-          (for/and : Boolean
-                   ([trie (TrieNode-children trie)]
-                    #:unless (false? trie))
-            (loop trie (add1 idx)))]
+          (for/fold ([acc : Boolean #f])
+                    ([trie (TrieNode-children trie)]
+                     #:unless (false? trie))
+            (or acc (loop trie (add1 idx))))]
          [else
           (define new-trie (vector-ref (TrieNode-children trie) (char->index ch)))
           (and new-trie (loop new-trie (add1 idx)))])])))
@@ -54,11 +54,34 @@
 (module+ test
   (require typed/rackunit)
   (let ([trie (make-trie)])
-    (for ([str '("hello" "hella" "pink" "hej")])
+    (for ([str '("hello" "hella" "pink" "hej" "a")])
       (trie-insert! trie str))
     (check-true (trie-member? trie "hello"))
     (check-true (trie-member? trie "hella"))
     (check-true (trie-member? trie "he..a"))
     (check-false (trie-member? trie "pint"))
     (check-true (trie-member? trie "pin."))
-    (check-false (trie-member? trie "hell"))))
+    (check-false (trie-member? trie "hell"))
+    (check-false (trie-member? trie ".a")))
+  (let ([trie (make-trie)])
+    (for ([str '("a")])
+      (trie-insert! trie str))
+    (check-false (trie-member? trie ".a"))
+    (check-false (trie-member? trie "a."))
+    (check-true (trie-member? trie "a"))))
+
+;; (require 'M)
+
+;; (define word-dictionary%
+;;   (class object%
+;;     (super-new)
+
+;;     (init-field)
+;;     (define trie (make-trie))
+
+;;     ; add-word : string? -> void?
+;;     (define/public (add-word word)
+;;       (trie-insert! trie word))
+;;     ; search : string? -> boolean?
+;;     (define/public (search word)
+;;       (trie-member? trie word))))
