@@ -83,16 +83,26 @@ Of course, you can use the same trick to write lazy racket.
 
 
 ** did you get a job from writing racket during interviews?
-Not yet. Despite all the nice things I said about Racket, I do think
-writing racket in a live coding interview is not the best idea, both
-in terms of readability for the interviewer and editing experience (if
-you were only allowed to use an online editor rather than Emacs +
+Not yet, although I haven't actually gotten an interview yet. Despite
+all the nice things I said about Racket, I do think writing racket in
+a live coding interview is not the best idea, both in terms of
+readability for the interviewer and editing experience (if you were
+only allowed to use an online editor rather than Emacs +
 paredit/smartparens-strict).
 
 I could have picked Haskell, but imperative programming in Haskell can
-be quite a science. OCaml might seem ideal but it doesn't have the
-bells and whistles that Racket's macro provides. Advanced features
-like higher-order modules and kinds aren't as useful for small coding
-problems. Finally, neither language is supported on Leetcode, unlike
-Racket. (The other functional language supported by Leetcode is scala,
-although I'm quite intimidated by the idea of learning it)
+be quite a science. Coding problems can also be quite unforgiving if
+you are too committed to purely functional data structures, especially
+when there are time complexity constraints.  OCaml might seem ideal
+but it doesn't have the bells and whistles that Racket's macro
+provides. Advanced features like higher-order modules and kinds aren't
+as useful for small coding problems. Finally, neither language is
+supported on Leetcode, unlike Racket. (The other functional language
+supported by Leetcode is scala :()
+
+
+I'm in the process of redoing some of the exercises in Haskell and I
+might fully commit to it once I figure out an ergonomic way of working
+with mutable structures with linear types. The issue with Racket is
+purely cosmetic, but not negligible if your chance of employment is at
+stake.
