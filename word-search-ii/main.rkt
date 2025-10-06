@@ -79,7 +79,7 @@
 
   (: coord-valid? (-> Integer Integer Boolean))
   (define (coord-valid? row col)
-    (and (natural? row) (natural? col) (<= row num-rows) (<= col num-cols)))
+    (and (natural? row) (natural? col) (< row num-rows) (< col num-cols)))
 
   (: next-coords (-> Integer Integer (Listof (Pair Integer Integer))))
   (define (next-coords row col)
@@ -144,6 +144,12 @@
     '("eat" "pea" "oath" "rain"))
 
   (check-equal? (list->set (find-words board words)) (set "eat" "oath"))
+
+  (check-equal? (list->set (find-words board '("an" "if" "take"))) (set "an" "if"))
+
+  (check-equal? (list->set (find-words board '("oeiiflvrk" "ana"))) (set "oeiiflvrk"))
+  (check-equal? (list->set (find-words board '("oateihkaa" "ana"))) (set "oateihkaa"))
+  (check-equal? (list->set (find-words board '())) (set))
 
   (define board-small
     '((#\a #\b) (#\c #\d)))
