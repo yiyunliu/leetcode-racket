@@ -127,6 +127,6 @@
             (for/fold
              ([acc : (Setof String) new-acc])
              ([coord : (Pair Integer Integer) (next-coords row col)])
-              (loop new-acc new-str new-trie-maybe (car coord) (cdr coord))))
+              (loop acc new-str new-trie-maybe (car coord) (cdr coord))))
           (undo-discovered! row col)
           result])))))
