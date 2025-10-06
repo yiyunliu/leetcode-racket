@@ -143,4 +143,13 @@
   (define words
     '("eat" "pea" "oath" "rain"))
 
-  (check-equal? (list->set (find-words board words)) (set "eat" "oath")))
+  (check-equal? (list->set (find-words board words)) (set "eat" "oath"))
+
+  (define board-small
+    '((#\a #\b) (#\c #\d)))
+
+  (define words-small
+    '("abab"))
+
+  (check-equal?
+   (list->set (find-words board-small words-small)) (set)))
