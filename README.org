@@ -1,0 +1,98 @@
+* some leetcode solutions in (mostly) typed racket
+
+** why racket?
+Racket is quite good for leetcode problems. It is functional but
+you can still quite comfortably write imperative programs
+(e.g. imperative data structures such as o(1) access arrays). The
+default installation of Racket comes with most of the basic data
+structures you need, and I haven't run into a single instance where I
+would need an external library that Leetcode doesn't import.
+
+The special syntax for loops and iterations are, in my opinion, the
+most important features of a functional language. They make functional
+folds and maps tolerable so you won't feel too frustrated to fallback
+to imperative updates.
+
+Typed racket is even better. Occurrence typing means you have to write
+more type annotations than you are comfortable with if you
+are used to a hindley-milner style system, but the untagged unions
+make the code easier to refactor for small to medium sized programs
+on leetcode. Occurrence typing also supports some basic flow-sensitive
+analysis which you only see in systems with fancy types (e.g. GADTs or
+full-fledged dependent types).
+
+The only situations where i used untyped racket are when the exercise
+is too simple or there are more runtime errors not enforced by the
+type checker that i would need to worry about than static type
+errors.
+
+What surprises me a lot is that typed racket is indeed faster than
+untyped racket in many scenarios, with the only exception being
+problems that are so simple that the overhead of type checking
+outweighs the cost of the algorithm itself.
+
+** how do you even write typed racket on leetcode? it's not even supported!
+You can use the following hack to write any officially supported Racket
+dialects on Leetcode, including R6RS and lazy racket.
+
+Suppose Leetcode asks you to implement the following function =foo=.
+#+begin_src racket
+(define/contract (foo x)
+  (-> string? string? ))
+#+end_src
+
+The code will be passed to an environment that uses =#lang racket=,
+the default untyped racket language.
+
+To write =foo= in typed racket, we wrap =foo= inside a submodule =M=,
+which can use any dialect it wants, and then load the submodule from
+the outside.
+#+begin_src racket
+;; The name M doesn't have any special meanings
+(module M typed/racket
+  ;; export foo so it's brought to scope when required
+  (provide foo)
+
+  ;; typed racket definition of foo
+  (: foo (-> String String)
+  (define (foo x)
+     ... ))
+
+(require 'M)
+;; now foo is available!
+#+end_src
+
+Since typed racket functions can be directly called by untyped code,
+leetcode will happily accept the program snippet. When untyped code
+calls =foo=, which is from a typed module, Racket will perform dynamic checks to
+ensure that =foo= does take a =String= as its input.
+
+Of course, you can use the same trick to write lazy racket.
+#+begin_src racket
+(module M lazy
+  (provide foo)
+
+  ;; define foo in lazy racket
+  (define (foo x)
+     (+ x 1)))
+
+;; need to do some extra work to force the output of lazy racket functions
+(require (prefix-in M: 'm))
+(define (foo x) (force (M:foo x)))
+#+end_src
+
+
+** did you get a job from writing racket during interviews?
+Not yet. Despite all the nice things I said about Racket, I do think
+writing racket in a live coding interview is not the best idea, both
+in terms of readability for the interviewer and editing experience (if
+you were only allowed to use an online editor rather than Emacs +
+paredit/smartparens-strict).
+
+I could have picked Haskell, but imperative programming in Haskell can
+be quite a science. OCaml might seem ideal but it doesn't have the
+bells and whistles that Racket's macro provides. Advanced features
+like higher-order modules and kinds aren't as useful for small coding
+problems. Finally, neither language is supported on Leetcode, unlike
+Racket. (The other functional language supported by Leetcode is scala,
+although I'm quite intimidated by the idea of learning it)
