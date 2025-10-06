@@ -96,14 +96,14 @@
         (trie-insert! trie word))
       trie))
 
-  (set->list
-   (for*/fold : (Setof String)
-              ([acc : (Setof String) (set)])
+  (sort
+   (for*/fold : (Listof String)
+              ([acc : (Listof String) '()])
               ([row (in-range num-rows)]
                [col (in-range num-cols)]
                #:unless (discovered? row col))
-     (let loop : (Setof String)
-          ([acc : (Setof String) acc]
+     (let loop : (Listof String)
+          ([acc : (Listof String) acc]
            [str : (Listof Char) '()]
            [trie : TrieNode trie]
            [row : Integer row]
@@ -120,15 +120,17 @@
           (define new-str (cons ch str))
           (define new-acc
             (if (TrieNode-is-word? new-trie-maybe)
-                (set-add acc (list->string (reverse new-str)))
+                (begin
+                  (set-TrieNode-is-word?! new-trie-maybe #f)
+                  (cons (list->string (reverse new-str)) acc))
                 acc))
           (define result
             (for/fold
-             ([acc : (Setof String) new-acc])
+             ([acc : (Listof String) new-acc])
              ([coord : (Pair Integer Integer) (next-coords row col)])
               (loop acc new-str new-trie-maybe (car coord) (cdr coord))))
           (undo-discovered! row col)
-          result])))))
+          result]))) string<?))
 
 (module+ test
   (require typed/rackunit)
