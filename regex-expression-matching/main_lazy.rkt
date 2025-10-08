@@ -49,7 +49,7 @@
       [(= j 0)
        (zero? i)]
       [(= i 0)
-       (Star? (vector-ref regex (sub1 j)))]
+       (and (Star? (vector-ref regex (sub1 j))) (cache-ref 0 (sub1 j)))]
       [else
        (define r (vector-ref regex (sub1 j)))
        (define ch (string-ref s (sub1 i)))
@@ -68,4 +68,5 @@
   (check-true (is-match "aa" "aa"))
   (check-true (is-match "ab" ".*"))
   (check-true (is-match "abcbbbddda" "abcbb*.*"))
-  (check-false (is-match "abcbbbddda" "abcbb*.*b")))
+  (check-false (is-match "abcbbbddda" "abcbb*.*b"))
+  (check-false (is-match "a" "ab*a")))
