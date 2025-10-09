@@ -1,25 +1,27 @@
 #lang typed/racket
 
-(: successful-pairs (-> (Listof Integer) (Listof Integer)  Integer (Listof Integer) ))
+(require racket/unsafe/ops)
+
+(: successful-pairs (-> (Listof Fixnum) (Listof Fixnum)  Fixnum (Listof Fixnum) ))
 (define (successful-pairs spells _potions target)
   (define potions (list->vector _potions))
   (define len (vector-length potions))
   (vector-sort! potions <)
-  (: search (-> Integer Integer Integer (U Integer #f)))
+  (: search (-> Fixnum Fixnum Fixnum (U Fixnum #f)))
   (define (search start end spell)
     (cond
-      [(>= start end) #f]
+      [(unsafe-fx>= start end) #f]
       [else
-       (define idx (+ start (quotient (- end start) 2)))
+       (define idx (unsafe-fx+ start (unsafe-fxquotient (unsafe-fx- end start) 2)))
        (define elem (vector-ref potions idx))
        (cond
-         [(< (* elem spell) target)
-          (search (add1 idx) end spell)]
+         [(unsafe-fx< (unsafe-fx* elem spell) target)
+          (search (unsafe-fx+ 1 idx) end spell)]
          [else (or (search start idx spell) idx)])]))
 
   (for/list
-      ([spell spells])
+      ([spell : Fixnum spells])
     (define result (search 0 len spell))
     (if result
-        (- len result)
+        (unsafe-fx- len result)
         0)))
