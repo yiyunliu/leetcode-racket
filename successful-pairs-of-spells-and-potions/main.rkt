@@ -14,10 +14,7 @@
        (define elem (vector-ref potions idx))
        (cond
          [(< (* elem spell) target)
-          (search (add1 start) end spell)]
-         ;; [(or (<= idx start)
-         ;;       (< (* (vector-ref potions (sub1 idx)) spell) target))
-         ;;  idx]
+          (search (add1 idx) end spell)]
          [else (or (search start idx spell) idx)])]))
 
   (for/list
