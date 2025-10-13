@@ -8,16 +8,21 @@
 (define (make-countvec)
   (make-fxvector 26 0))
 
-(define (string->countvec s)
-  (define vec (make-countvec))
+(define (countvec-fill! vec)
+  (for ([i (in-range 26)])
+    (fxvector-set! vec i 0)))
+
+(define (string->countvec vec s)
   (for ([ch s])
     (define idx (char->index ch))
     (fxvector-set! vec idx
                    (add1 (fxvector-ref vec idx))))
   vec)
 
-(define (anagram? s0 s1)
-  (equal? (string->countvec s0) (string->countvec s1)))
+(define-syntax-rule (swap x y)
+  (let ([tmp x])
+    (set! x y)
+    (set! y tmp)))
 
 (define/contract (remove-anagrams words)
   (-> (listof string?) (listof string?))
@@ -26,14 +31,18 @@
     [else
      (define head (first words))
      (define tail (rest words))
-     (define-values (_ acc)
+     (define vec0 (string->countvec (make-countvec) head))
+     (define vec1 (make-countvec))
+     (define acc
        (for/fold
-         ([prev head]
-          [acc (list head)])
+         ([acc (list head)])
          ([word tail])
          (cond
-           [(anagram? prev word)
-            (values prev acc)]
+           [(equal? vec0 (string->countvec vec1 word))
+            (countvec-fill! vec1)
+            acc]
            [else
-            (values word (cons word acc))])))
+            (swap vec0 vec1)
+            (countvec-fill! vec1)
+            (cons word acc)])))
      (reverse acc)]))
