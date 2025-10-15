@@ -41,15 +41,19 @@ open KClosest
 
 let sorted_list_of_enum xs =  xs |> BatList.of_enum |> BatList.sort compare
 
-let test1 _ =
-  assert_equal (BatList.sort compare [(2,0);(0,2)]) (List.enum [(0,2);(2,0);(2,2)] |> k_closest 2 |> sorted_list_of_enum)
+let make_test expected k xs =
+  assert_equal (BatList.sort compare expected) (List.enum xs |> k_closest k |> sorted_list_of_enum)
 
-let test2 _ =
-  assert_equal (BatList.sort compare [(0,2)]) (List.enum [(0,2);(2,2)] |> k_closest 1 |> sorted_list_of_enum)
+let test1 _ = make_test [(2,0);(0,2)] 2 [(0,2);(2,0);(2,2)]
+let test2 _ = make_test [(0,2)] 1 [(0,2);(2,2)]
+let test3 _ = make_test [(-2,2)] 1 [(1,3);(-2,2)]
+let test4 _ = make_test [(3,3);(-2,4)] 2 [(3,3);(5,-1);(-2,4)]
 
 let suite =
   "suite" >:::
     ["test1" >:: test1
-    ;"test2" >:: test2]
+    ;"test2" >:: test2
+    ;"test3" >:: test3
+    ;"test4" >:: test4]
 
 let _ = run_test_tt_main suite
