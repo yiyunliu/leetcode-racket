@@ -26,10 +26,8 @@ module MatrixGraph : GRAPH with type t = char array array = struct
     and num_cols = Array.length (g.(0)) in
     Enum.unfold 0 (fun x ->
         if x < num_rows then
-          Some ((Enum.unfold 0 (fun y ->
-                    if y < num_cols then
-                      Some ((x, y) ,y + 1)
-                    else None)), x + 1)
+          Some (Enum.range 0 ~until:(num_cols - 1)
+                |> Enum.map (fun y -> (x,y)) , x + 1)
         else None)
     |> Enum.flatten
     |> Enum.filter (fun (i,j) -> g.(i).(j) == '1')
