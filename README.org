@@ -83,28 +83,9 @@ Of course, you can use the same trick to write lazy racket.
 
 
 ** Did you get a job from writing racket during interviews?
-Not yet, although I haven't actually gotten an interview yet. Despite
-all the nice things I said about Racket, I do think writing racket in
-a live coding interview is not the best idea, both in terms of
-readability for the interviewer and editing experience (if you were
-only allowed to use an online editor rather than Emacs +
-paredit/smartparens-strict).
+No lol
 
-I could have picked Haskell, but imperative programming in Haskell can
-be quite a science. Coding problems can also be quite unforgiving if
-you are too committed to purely functional data structures, especially
-when there are time complexity constraints.  OCaml might seem ideal
-but it doesn't have the bells and whistles that Racket's macro
-provides. Advanced features like higher-order modules and kinds aren't
-as useful for small coding problems. Finally, neither language is
-supported on Leetcode, unlike Racket. (The other functional language
-supported by Leetcode is scala :()
-
-
-I'm in the process of redoing some of the exercises in Haskell and
-SML. At least the repo makes it easy for me to write PBT to check my
-Haskell implementation when Leetcode doesn't support it.
-I might fully commit to Haskell once I figure out an ergonomic way of working
-with mutable structures with linear types. The issue with Racket is
-purely cosmetic, but not negligible if your chance of employment is at
-stake.
+While Racket is available on Leetcode, I don't see it being supported
+anywhere on the online coding platforms that companies use. I've
+started writing a bit more OCaml because it's supported on code
+signal with the [[https://ocaml-batteries-team.github.io][batteries]] library preloaded.
