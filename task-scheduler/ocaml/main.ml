@@ -14,12 +14,14 @@ module TaskHeap = Heap.Make(TaskOrd)
 
 module I : S = struct
   let schedule_tasks tasks n =
+
     let f (heap,count) task =
       let count = Map.modify_def 0 task (fun x -> x + 1) count in
       let prio = Map.find task count in
       let heap = TaskHeap.add (prio,task) heap in
       (heap, count) in
     let (heap,_) = Enum.fold f (TaskHeap.empty,Map.empty) tasks in
+
     let f (prev,acc) (_,task) =
       if prev = Some task then
         let acc = acc + n in
