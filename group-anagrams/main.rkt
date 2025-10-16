@@ -8,8 +8,7 @@
     (: ht (HashTable String (Listof String)))
     (define ht (make-hash))
 
-    (for
-    ([str : String strs])
+    (for ([str : String strs])
 
       (define sorted-str (sort-string str))
 
