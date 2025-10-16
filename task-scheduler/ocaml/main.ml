@@ -37,6 +37,10 @@ let make_test expected tasks n =
 
 let test1 = make_test 5 ['X';'X';'Y';'Y'] 2
 let test2 = make_test 9 ['A';'A';'A';'B';'C'] 3
+let test3 = make_test 6 ['A';'C';'A';'B';'D';'B'] 1
 
-let suite = "suite" >::: ["test1">::test1;"test2">::test2]
+let suite = "suite" >:::
+              ["test1">::test1
+              ;"test2">::test2
+              ;"test3">::test3]
 let _ = run_test_tt_main suite
