@@ -1,5 +1,5 @@
 open Batteries
-type graph = int array array
+open OUnit2
 
 type cell = Treasure | Water | Land
 
@@ -8,8 +8,6 @@ let cell_of_int i =
   | 0 -> Treasure
   | -1 -> Water
   | _ -> Land
-
-type vertex = int * int
 
 let islands_and_treasure grid =
 
@@ -54,3 +52,35 @@ let islands_and_treasure grid =
         end
     done
   done
+
+let test1 _ =
+  let input =
+    [|[|2147483647;-1;0;2147483647|];
+      [|2147483647;2147483647;2147483647;-1|];
+      [|2147483647;-1;2147483647;-1|];
+      [|0;-1;2147483647;2147483647|]|] in
+  let output =
+    [|[|3;-1;0;1|];
+      [|2;2;1;-1|];
+      [|1;-1;2;-1|];
+      [|0;-1;3;4|]|] in
+  assert_equal output (islands_and_treasure input; input)
+    ~printer:[%derive.show: int array array]
+
+let test2 _ =
+  let input =
+    [|[|0;-1|];
+      [|2147483647;2147483647|]|] in
+  let output =
+    [|[|0;-1|];
+      [|1;2|]|] in
+  assert_equal output (islands_and_treasure input; input)
+    ~printer:[%derive.show: int array array]
+
+
+let suite =
+  "suite" >:::
+    ["test1" >:: test1
+    ;"test2" >:: test2]
+
+let _ = run_test_tt_main suite
