@@ -1,5 +1,3 @@
-open Batteries
-
 type 'a tree = Empty | Node of {value : 'a; mutable left : 'a tree; mutable right : 'a tree}
 
 let rec invert_tree t =
