@@ -34,7 +34,10 @@ let islands_and_treasure grid =
          match node_ty with
          | Water -> process_nodes nodes new_nodes
          | Land -> process_nodes nodes
-                     (List.append (get_neighbors node |> List.filter (not % is_discovered)) new_nodes)
+                     (List.append
+                        (get_neighbors node
+                         |> List.filter (not % is_discovered))
+                        new_nodes)
          | Treasure -> None in
     match process_nodes nodes [] with
     | None -> set v lvl
