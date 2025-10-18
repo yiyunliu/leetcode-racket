@@ -16,8 +16,6 @@ let trap (heights : int array) : int =
   let last = Array.length heights - 1 in
   loop 0 0 last 0 0
 
-
-
 let test1 _ =
   assert_equal 9 (trap [|0;2;0;3;1;0;1;4;2;1|])
     ~printer:string_of_int
